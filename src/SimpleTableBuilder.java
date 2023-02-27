@@ -17,13 +17,13 @@ public class SimpleTableBuilder extends LittleBaseListener {
     }
 
      @Override public void enterVar_decl(LittleParser.Var_declContext ctx) {
-         String name = ctx.id_list().getText();
-         String type = ctx.var_type().getText();
+        String name = ctx.id_list().getText();
+        String[] vars = name.split(",");
+        String type = ctx.var_type().getText();
 
-        //  String type = 
-        //  String value = ctx.str().getText();
-        //  System.out.println(name + ", " + type + ", " + value);
-         System.out.println(name +", "+type);
+        for (int i = 0; i < vars.length; i++) {
+            System.out.println(vars[i]+", "+type);
+        }
     }
 
     public void prettyPrint() {
