@@ -3,8 +3,9 @@ import java.util.ArrayList;
 
 public class SimpleTableBuilder extends LittleBaseListener {
 
-    HashMap<String, String[]> global = new HashMap<>();
-    HashMap<String, String[]> temp = new HashMap<>();
+    // HashMap<String, String[]> global = new HashMap<>();
+    // HashMap<String, String[]> temp = new HashMap<>();
+    SymbolTable curr = new SymbolTable("GLOBAL");
 
     @Override public void enterProgram(LittleParser.ProgramContext ctx) {
         //1. Make a new symbol table for "Global"
@@ -14,12 +15,14 @@ public class SimpleTableBuilder extends LittleBaseListener {
 
     @Override public void enterString_decl(LittleParser.String_declContext ctx) {
         //1. extract the name, type, and value
-        String name = ctx.id().getText();
-        String type = "String";
+        String[] name = new String[]  {ctx.id().getText()};
+        String type = "STRING";
         String value = ctx.str().getText();
         String[] type_value = new String[] {type, value};
 
-        global.put(name,type_value);
+        curr.insert(name, type_value);
+
+        //global.put(name,type_value);
     }
 
      @Override public void enterVar_decl(LittleParser.Var_declContext ctx) {
@@ -27,34 +30,33 @@ public class SimpleTableBuilder extends LittleBaseListener {
         String[] vars = name.split(",");
         String[] type = new String[] {ctx.var_type().getText()};
 
-        for (int i = 0; i < vars.length; i++) {
-            //System.out.println(vars[i]+", "+type);
-            temp.put(vars[i], type);
-        }
+        curr.insert(vars, type);
     }
 
     public void prettyPrint() {
-        //print all symbol tables in the order they were created
-        for (Map.Entry<String,String[]> mapElement : global.entrySet()) {
-            String key = mapElement.getKey();
+        // //print all symbol tables in the order they were created
+        // for (Map.Entry<String,String[]> mapElement : global.entrySet()) {
+        //     String key = mapElement.getKey();
  
-            // Adding some bonus marks to all the students
-            String[] value = mapElement.getValue();
+        //     // Adding some bonus marks to all the students
+        //     String[] value = mapElement.getValue();
  
-            // Printing above marks corresponding to
-            // students names
-            System.out.println("name " + key + " type " + value[0] + " value " + value[1]);
-        } //end global print
+        //     // Printing above marks corresponding to
+        //     // students names
+        //     System.out.println("name " + key + " type " + value[0] + " value " + value[1]);
+        // } //end global print
 
-        for (Map.Entry<String,String[]> mapElement : temp.entrySet()) {
-            String key = mapElement.getKey();
+        // for (Map.Entry<String,String[]> mapElement : temp.entrySet()) {
+        //     String key = mapElement.getKey();
  
-            // Adding some bonus marks to all the students
-            String[] value = mapElement.getValue();
+        //     // Adding some bonus marks to all the students
+        //     String[] value = mapElement.getValue();
  
-            // Printing above marks corresponding to
-            // students names
-            System.out.println("name " + key + " type " + value[0]);
-        } //end global print
+        //     // Printing above marks corresponding to
+        //     // students names
+        //     System.out.println("name " + key + " type " + value[0]);
+        //} //end global print
+        curr.printTable();
+
     }
 }
