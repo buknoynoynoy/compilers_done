@@ -8,7 +8,9 @@ public class SymbolTable {
         this.name = inputName;
     }
 
+    //replicates put, but accounts for both String, Float, and Int
     public void insert(String[] name, String[] typeValue) {
+        //if it is a string with type and value, input as string
         if (typeValue.length > 1) {
             String tempName = name[0];
             local.put(tempName, typeValue);
@@ -20,22 +22,20 @@ public class SymbolTable {
         }
     }
 
+    //Print the Symbol Table
     public void printTable() {
         //print all symbol tables in the order they were created
         for (Map.Entry<String,String[]> mapElement : local.entrySet()) {
             String key = mapElement.getKey();
  
-            // Adding some bonus marks to all the students
             String[] value = mapElement.getValue();
  
-            // Printing above marks corresponding to
-            // students names
             if (value.length > 1) {
                 System.out.println("name " + key + " type " + value[0] + " value " + value[1]);
             }
             else {
                 System.out.println("name " + key + " type " + value[0]);
             }
-        } //end global print
+        } //end print
     }
 }

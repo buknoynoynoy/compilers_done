@@ -6,6 +6,7 @@ public class SimpleTableBuilder extends LittleBaseListener {
     // HashMap<String, String[]> global = new HashMap<>();
     // HashMap<String, String[]> temp = new HashMap<>();
     SymbolTable curr = new SymbolTable("GLOBAL");
+    ArrayList<String> functions = new ArrayList<>();
 
     @Override public void enterProgram(LittleParser.ProgramContext ctx) {
         //1. Make a new symbol table for "Global"
@@ -25,12 +26,43 @@ public class SimpleTableBuilder extends LittleBaseListener {
         //global.put(name,type_value);
     }
 
-     @Override public void enterVar_decl(LittleParser.Var_declContext ctx) {
+    //get the information about the regular variables, not strings
+    @Override public void enterVar_decl(LittleParser.Var_declContext ctx) {
         String name = ctx.id_list().getText();
+        //splits each name from the list and stores them in an array
         String[] vars = name.split(",");
+        //assigns the type to an array in order to pass to the symbol table
         String[] type = new String[] {ctx.var_type().getText()};
 
         curr.insert(vars, type);
+    }
+
+    //get the information about the function
+    @Override public void enterFunc_decl(LittleParser.Func_declContext ctx) {
+        //gets the name of the function
+        String name = ctx.id().getText();
+        //gets the parameters of the function
+        String parameters = ctx.param_decl_list().getText();
+        //gets the internal content of the function
+        String content = ctx.func_body().getText();
+
+        //System.out.println("parameters: " + parameters);
+        functions.add(name);
+
+    }
+
+    //check the contents of the if statements
+    @Override public void enterIf_stmt(LittleParser.If_stmtContext ctx) {
+        //gets the internal contents of the if statement
+        String content = ctx.stmt_list().getText();
+        //System.out.println("if contents: " + content);
+    }
+
+    //check the contents of the else parts of the contents
+    @Override public void enterElse_part(LittleParser.Else_partContext ctx) {
+        //gets the content of the else part of the if statements
+        String content = ctx.stmt_list().getText();
+        //System.out.println("else part: " + content);
     }
 
     public void prettyPrint() {
@@ -56,6 +88,7 @@ public class SimpleTableBuilder extends LittleBaseListener {
         //     // students names
         //     System.out.println("name " + key + " type " + value[0]);
         //} //end global print
+
         curr.printTable();
 
     }
