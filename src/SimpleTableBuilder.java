@@ -28,9 +28,9 @@ public class SimpleTableBuilder extends LittleBaseListener {
 
     //get the information about the regular variables, not strings
     @Override public void enterVar_decl(LittleParser.Var_declContext ctx) {
-        String name = ctx.id_list().getText();
+        String names = ctx.id_list().getText();
         //splits each name from the list and stores them in an array
-        String[] vars = name.split(",");
+        String[] vars = names.split(",");
         //assigns the type to an array in order to pass to the symbol table
         String[] type = new String[] {ctx.var_type().getText()};
 
