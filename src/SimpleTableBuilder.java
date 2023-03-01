@@ -3,9 +3,14 @@ import java.util.ArrayList;
 
 public class SimpleTableBuilder extends LittleBaseListener {
 
+    Stack<String> tableStack = new Stack<String>();
+
+
     // HashMap<String, String[]> global = new HashMap<>();
     // HashMap<String, String[]> temp = new HashMap<>();
     SymbolTable curr = new SymbolTable("GLOBAL");
+    HashMap<String, String[]> temp = new HashMap<>();
+
     ArrayList<String> functions = new ArrayList<>();
 
     @Override public void enterProgram(LittleParser.ProgramContext ctx) {
@@ -46,9 +51,13 @@ public class SimpleTableBuilder extends LittleBaseListener {
         //gets the internal content of the function
         String content = ctx.func_body().getText();
 
-        //System.out.println("parameters: " + parameters);
+        System.out.println("parameters: " + parameters);
         functions.add(name);
 
+    }
+
+    @Override public void exitFunc_decl(LittleParser.Func_declContext ctx) {
+        
     }
 
     //check the contents of the if statements
