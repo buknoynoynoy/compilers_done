@@ -54,14 +54,22 @@ public class SimpleTableBuilder extends LittleBaseListener {
     //check the contents of the if statements
     @Override public void enterIf_stmt(LittleParser.If_stmtContext ctx) {
         //gets the internal contents of the if statement
-        String content = ctx.stmt_list().getText();
+        try {
+            String content = ctx.stmt_list().getText();
+        } catch (Exception e) {
+
+        }
         //System.out.println("if contents: " + content);
     }
 
     //check the contents of the else parts of the contents
     @Override public void enterElse_part(LittleParser.Else_partContext ctx) {
         //gets the content of the else part of the if statements
-        String content = ctx.stmt_list().getText();
+        try {
+            String content = ctx.stmt_list().getText();
+        } catch (Exception e) {
+            //do nothing
+        }
         //System.out.println("else part: " + content);
     }
 
