@@ -12,11 +12,15 @@ public class SimpleTableBuilder extends LittleBaseListener {
     HashMap<String, String[]> temp = new HashMap<>();
 
     ArrayList<String> functions = new ArrayList<>();
+    ArrayList<SymbolTable> tables = new ArrayList<>();
 
     @Override public void enterProgram(LittleParser.ProgramContext ctx) {
         //1. Make a new symbol table for "Global"
         //2. Add it to the list of symbol Tables
         //3. Push it to the scope stack
+        SymbolTable global = new SymbolTable("glob");
+        tables.add(global);
+
     }
 
     @Override public void enterString_decl(LittleParser.String_declContext ctx) {
@@ -57,7 +61,7 @@ public class SimpleTableBuilder extends LittleBaseListener {
     }
 
     @Override public void exitFunc_decl(LittleParser.Func_declContext ctx) {
-        
+        String func = ctx.id().getText();
     }
 
     //check the contents of the if statements
