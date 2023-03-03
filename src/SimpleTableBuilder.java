@@ -10,7 +10,7 @@ public class SimpleTableBuilder extends LittleBaseListener {
     // HashMap<String, String[]> temp = new HashMap<>();
     SymbolTable curr = new SymbolTable("GLOBAL");
     HashMap<String, String[]> temp = new HashMap<>();
-
+    
     ArrayList<String> functions = new ArrayList<>();
     ArrayList<SymbolTable> tables = new ArrayList<>();
 
