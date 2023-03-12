@@ -9,7 +9,6 @@ public class SimpleTableBuilder extends LittleBaseListener {
     // HashMap<String, String[]> global = new HashMap<>();
     // HashMap<String, String[]> temp = new HashMap<>();
     SymbolTable curr = new SymbolTable("GLOBAL");
-    HashMap<String, String[]> temp = new HashMap<>();
     
     ArrayList<String> functions = new ArrayList<>();
     ArrayList<SymbolTable> tables = new ArrayList<>();
@@ -18,8 +17,6 @@ public class SimpleTableBuilder extends LittleBaseListener {
         //1. Make a new symbol table for "Global"
         //2. Add it to the list of symbol Tables
         //3. Push it to the scope stack
-        SymbolTable global = new SymbolTable("glob");
-        tables.add(global);
 
     }
 
