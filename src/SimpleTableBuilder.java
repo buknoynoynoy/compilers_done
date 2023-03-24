@@ -1,7 +1,13 @@
+import java.lang.reflect.Array;
 import java.util.*;
 import java.util.ArrayList;
 
 public class SimpleTableBuilder extends LittleBaseListener {
+
+    //MAKE CONTENTS ARRAY WITH NAME TYPE AND VALUE AN ARRAYLIST HOLDING EACH THING
+    //JAVA STORES THE REFERENCE HENCE IT DOESNT WORK SO PLS ADD
+
+    int count = 0;
 
     Stack<String> tableStack = new Stack<String>();
 
@@ -22,12 +28,13 @@ public class SimpleTableBuilder extends LittleBaseListener {
 
     @Override public void enterString_decl(LittleParser.String_declContext ctx) {
         //1. extract the name, type, and value
-        String[] name = new String[]  {ctx.id().getText()};
+        String name = ctx.id().getText();
         String type = "STRING";
         String value = ctx.str().getText();
-        String[] type_value = new String[] {type, value};
+        String[] type_value = new String[] {name, type, value};
 
-        curr.insert(name, type_value);
+        curr.insert("no_table_strings-"+count, type_value);
+        count++;
 
         //global.put(name,type_value);
     }
@@ -38,9 +45,21 @@ public class SimpleTableBuilder extends LittleBaseListener {
         //splits each name from the list and stores them in an array
         String[] vars = names.split(",");
         //assigns the type to an array in order to pass to the symbol table
-        String[] type = new String[] {ctx.var_type().getText()};
+        String type = ctx.var_type().getText();
 
-        curr.insert(vars, type);
+        for (int i = 0; i < vars.length; i++) {
+            String[] varContents = new String[2];
+            varContents[0] = vars[i];
+            varContents[1] = type;
+
+            //System.out.println(Arrays.toString(varContents)); //checks contents of varContents array
+
+            //System.out.println("no_table-"+count + Arrays.toString(varContents));     //checks the tuple being input to map
+
+            curr.insert("no_table-"+count, varContents);
+            count++;
+        }
+
     }
 
     //get the information about the function
@@ -52,7 +71,7 @@ public class SimpleTableBuilder extends LittleBaseListener {
         //gets the internal content of the function
         String content = ctx.func_body().getText();
 
-        System.out.println("parameters: " + parameters);
+        //System.out.println("parameters: " + parameters);
         functions.add(name);
 
     }

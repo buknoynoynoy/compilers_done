@@ -9,17 +9,11 @@ public class SymbolTable {
     }
 
     //replicates put, but accounts for both String, Float, and Int
-    public void insert(String[] name, String[] typeValue) {
+    public void insert(String tableName, String[] contents) {
         //if it is a string with type and value, input as string
-        if (typeValue.length > 1) {
-            String tempName = name[0];
-            local.put(tempName, typeValue);
-        } else {
-            for (int i = 0; i < name.length; i++) {
-                //System.out.println(vars[i]+", "+type);
-                local.put(name[i], typeValue);
-            }
-        }
+        //System.out.println("SYMBOLTABLE.JAVA: " + "Contents: " + Arrays.toString(contents));
+        local.put(tableName, contents);
+        //this.printTable();
     }
 
     //Print the Symbol Table
@@ -29,12 +23,14 @@ public class SymbolTable {
             String key = mapElement.getKey();
  
             String[] value = mapElement.getValue();
+
+            //System.out.println(key + Arrays.toString(value));
  
-            if (value.length > 1) {
-                System.out.println("name " + key + " type " + value[0] + " value " + value[1]);
+            if (value.length > 2) {
+                System.out.println("name " + value[0] + " type " + value[1] + " value " + value[2]);
             }
             else {
-                System.out.println("name " + key + " type " + value[0]);
+                System.out.println("name " + value[0] + " type " + value[1]);
             }
         } //end print
     }
