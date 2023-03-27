@@ -24,7 +24,7 @@ public class SymbolTable {
 
             //System.out.println(key + Arrays.toString(value));
  
-            if (value.length > 2 && (key != null)) {
+            if (value.length > 1 && (key != null)) {
                 System.out.println("name " + key + " type " + value[0] + " value " + value[1]);
             }
             else if (key != null) {

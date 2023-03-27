@@ -7,9 +7,10 @@ public class SimpleTableBuilder extends LittleBaseListener {
     //MAKE CONTENTS ARRAY WITH NAME TYPE AND VALUE AN ARRAYLIST HOLDING EACH THING
     //JAVA STORES THE REFERENCE HENCE IT DOESNT WORK SO PLS ADD
 
-    int count = 0;
+    int count = 1;
 
     Stack<SymbolTable> tableStack = new Stack<SymbolTable>();
+    ArrayList<SymbolTable> tables = new ArrayList<>();
 
     public static String[] splitFunc(String input) {
         // {varName, type}
@@ -34,23 +35,21 @@ public class SimpleTableBuilder extends LittleBaseListener {
     }
 
     @Override public void enterString_decl(LittleParser.String_declContext ctx) {
-        SymbolTable curr = tableStack.peek();
-
         //1. extract the name, type, and value
         String name = ctx.id().getText();
         String type = "STRING";
         String value = ctx.str().getText();
         String[] type_value = new String[] {type, value};
 
-        curr.insert(name, type_value);
+        tableStack.peek().insert(name, type_value);
+
+        tables.remove(tableStack.peek());
 
         //global.put(name,type_value);
     }
 
     //get the information about the regular variables, not strings
     @Override public void enterVar_decl(LittleParser.Var_declContext ctx) {
-        SymbolTable curr = tableStack.peek();
-
         String names = ctx.id_list().getText();
         //splits each name from the list and stores them in an array
         String[] vars = names.split(",");
@@ -68,17 +67,16 @@ public class SimpleTableBuilder extends LittleBaseListener {
 
             //System.out.println("no_table-"+count + Arrays.toString(varContents));     //checks the tuple being input to map
 
-            curr.insert(key, varContents);
+            tableStack.peek().insert(key, varContents);
         }
-
+            tables.add(tableStack.peek());
     }
 
     //get the information about the function
     @Override public void enterFunc_decl(LittleParser.Func_declContext ctx) {
-        SymbolTable curr = new SymbolTable("BLOCK" + count);
-
         //gets the name of the function
         String name = ctx.id().getText();
+        SymbolTable curr = new SymbolTable(name);
         //gets the parameters of the function
         String parameters =  ctx.param_decl_list().getText();
         String[] splits = parameters.split(",");
@@ -90,10 +88,14 @@ public class SimpleTableBuilder extends LittleBaseListener {
             varDecl = splitFunc(splits[i]); //{name, type}
             varInfo[0] = varDecl[1];
             curr.insert(varDecl[0], varInfo);
-            count++;
         }
 
         tableStack.push(curr);
+
+        tables.add(curr);
+
+        // System.out.println("from enterFuncDecl:");
+        // prettyPrint();
 
     }
 
@@ -103,20 +105,33 @@ public class SimpleTableBuilder extends LittleBaseListener {
 
     //check the contents of the if statements
     @Override public void enterIf_stmt(LittleParser.If_stmtContext ctx) {
-        //gets the internal contents of the if statement
         try {
-            String content = ctx.stmt_list().getText();
+            SymbolTable curr = new SymbolTable("BLOCK " + count);
+
+            count++;
+
+            tableStack.push(curr);
+
+            tables.add(curr);
         } catch (Exception e) {
 
         }
-        //System.out.println("if contents: " + content);
+    }
+
+    @Override public void exitIf_stmt(LittleParser.If_stmtContext ctx) {
+        tableStack.pop();
     }
 
     //check the contents of the else parts of the contents
     @Override public void enterElse_part(LittleParser.Else_partContext ctx) {
+        SymbolTable curr = new SymbolTable("BLOCK " + count);
         //gets the content of the else part of the if statements
         try {
-            String content = ctx.stmt_list().getText();
+            count++;
+
+            tableStack.push(curr);
+
+            tables.add(curr);
         } catch (Exception e) {
             //do nothing
         }
@@ -124,30 +139,16 @@ public class SimpleTableBuilder extends LittleBaseListener {
     }
 
     public void prettyPrint() {
-        // //print all symbol tables in the order they were created
-        // for (Map.Entry<String,String[]> mapElement : global.entrySet()) {
-        //     String key = mapElement.getKey();
- 
-        //     // Adding some bonus marks to all the students
-        //     String[] value = mapElement.getValue();
- 
-        //     // Printing above marks corresponding to
-        //     // students names
-        //     System.out.println("name " + key + " type " + value[0] + " value " + value[1]);
-        // } //end global print
 
-        // for (Map.Entry<String,String[]> mapElement : temp.entrySet()) {
-        //     String key = mapElement.getKey();
- 
-        //     // Adding some bonus marks to all the students
-        //     String[] value = mapElement.getValue();
- 
-        //     // Printing above marks corresponding to
-        //     // students names
-        //     System.out.println("name " + key + " type " + value[0]);
-        //} //end global print
+        // for (SymbolTable symtb : tables) {
+        //     System.out.println(symtb.name);
 
-        curr.printTable();
+        // }
+        for (SymbolTable symtb2 : tables) {
+            System.out.println("Symbol table " + symtb2.name);
+            symtb2.printTable();
+            System.out.println();
+        }
 
     }
 }
