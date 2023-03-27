@@ -9,16 +9,8 @@ public class SimpleTableBuilder extends LittleBaseListener {
 
     int count = 0;
 
-    Stack<String> tableStack = new Stack<String>();
+    Stack<SymbolTable> tableStack = new Stack<SymbolTable>();
 
-
-    // HashMap<String, String[]> global = new HashMap<>();
-    // HashMap<String, String[]> temp = new HashMap<>();
-    SymbolTable curr = new SymbolTable("GLOBAL");
-    
-    ArrayList<String> functions = new ArrayList<>();
-    ArrayList<SymbolTable> tables = new ArrayList<>();
-    
     public static String[] splitFunc(String input) {
         // {varName, type}
         String[] result = new String[2];
@@ -36,24 +28,29 @@ public class SimpleTableBuilder extends LittleBaseListener {
         //1. Make a new symbol table for "Global"
         //2. Add it to the list of symbol Tables
         //3. Push it to the scope stack
+        SymbolTable curr = new SymbolTable("GLOBAL");
+        tableStack.push(curr);
 
     }
 
     @Override public void enterString_decl(LittleParser.String_declContext ctx) {
+        SymbolTable curr = tableStack.peek();
+
         //1. extract the name, type, and value
         String name = ctx.id().getText();
         String type = "STRING";
         String value = ctx.str().getText();
-        String[] type_value = new String[] {type, value, "no-table"};
+        String[] type_value = new String[] {type, value};
 
         curr.insert(name, type_value);
-        count++;
 
         //global.put(name,type_value);
     }
 
     //get the information about the regular variables, not strings
     @Override public void enterVar_decl(LittleParser.Var_declContext ctx) {
+        SymbolTable curr = tableStack.peek();
+
         String names = ctx.id_list().getText();
         //splits each name from the list and stores them in an array
         String[] vars = names.split(",");
@@ -63,23 +60,23 @@ public class SimpleTableBuilder extends LittleBaseListener {
         String key;
 
         for (int i = 0; i < vars.length; i++) {
-            String[] varContents = new String[2];
+            String[] varContents = new String[1];
             key = vars[i];
             varContents[0] = type;
-            varContents[1] = "no-table-"+count;
 
             //System.out.println(Arrays.toString(varContents)); //checks contents of varContents array
 
             //System.out.println("no_table-"+count + Arrays.toString(varContents));     //checks the tuple being input to map
 
             curr.insert(key, varContents);
-            count++;
         }
 
     }
 
     //get the information about the function
     @Override public void enterFunc_decl(LittleParser.Func_declContext ctx) {
+        SymbolTable curr = new SymbolTable("BLOCK" + count);
+
         //gets the name of the function
         String name = ctx.id().getText();
         //gets the parameters of the function
@@ -87,23 +84,21 @@ public class SimpleTableBuilder extends LittleBaseListener {
         String[] splits = parameters.split(",");
 
         String[] varDecl = new String[2];
-        String[] varInfo = new String[2];
+        String[] varInfo = new String[1];
 
         for (int i = 0; i < splits.length; i++) {
             varDecl = splitFunc(splits[i]); //{name, type}
             varInfo[0] = varDecl[1];
-            varInfo[1] = "no-table";
             curr.insert(varDecl[0], varInfo);
             count++;
         }
 
-        System.out.println("parameters: " + parameters);
-        functions.add(name);
+        tableStack.push(curr);
 
     }
 
     @Override public void exitFunc_decl(LittleParser.Func_declContext ctx) {
-        String func = ctx.id().getText();
+        tableStack.pop();
     }
 
     //check the contents of the if statements

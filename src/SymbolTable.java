@@ -2,10 +2,10 @@ import java.util.*;
 
 public class SymbolTable {
     String name;
-    private HashMap<String, String[]> local = new HashMap<>();
+    private LinkedHashMap<String, String[]> local = new LinkedHashMap<>(100);
 
-    public SymbolTable(String inputName) {
-        this.name = inputName;
+    public SymbolTable(String tableName) {
+        this.name = tableName;
     }
 
     //replicates put, but accounts for both String, Float, and Int
@@ -25,10 +25,10 @@ public class SymbolTable {
             //System.out.println(key + Arrays.toString(value));
  
             if (value.length > 2 && (key != null)) {
-                System.out.println("name " + key + " type " + value[0] + " value " + value[1] + " Table: " + value[2]);
+                System.out.println("name " + key + " type " + value[0] + " value " + value[1]);
             }
             else if (key != null) {
-                System.out.println("name " + key + " type " + value[0] + " Table: " + value[1]);
+                System.out.println("name " + key + " type " + value[0]);
             }
         } //end print
     }
