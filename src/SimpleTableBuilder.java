@@ -18,6 +18,19 @@ public class SimpleTableBuilder extends LittleBaseListener {
     
     ArrayList<String> functions = new ArrayList<>();
     ArrayList<SymbolTable> tables = new ArrayList<>();
+    
+    public static String[] splitFunc(String input) {
+        // {varName, type}
+        String[] result = new String[2];
+        if (input.startsWith("INT")) {
+            result[1] = "INT";
+            result[0] = input.substring(3);
+        } else if (input.startsWith("FLOAT")) {
+            result[1] = "FLOAT";
+            result[0] = input.substring(5);
+        }
+        return result;
+    }
 
     @Override public void enterProgram(LittleParser.ProgramContext ctx) {
         //1. Make a new symbol table for "Global"
@@ -31,9 +44,9 @@ public class SimpleTableBuilder extends LittleBaseListener {
         String name = ctx.id().getText();
         String type = "STRING";
         String value = ctx.str().getText();
-        String[] type_value = new String[] {name, type, value};
+        String[] type_value = new String[] {type, value, "no-table"};
 
-        curr.insert("no_table_strings-"+count, type_value);
+        curr.insert(name, type_value);
         count++;
 
         //global.put(name,type_value);
@@ -47,16 +60,19 @@ public class SimpleTableBuilder extends LittleBaseListener {
         //assigns the type to an array in order to pass to the symbol table
         String type = ctx.var_type().getText();
 
+        String key;
+
         for (int i = 0; i < vars.length; i++) {
             String[] varContents = new String[2];
-            varContents[0] = vars[i];
-            varContents[1] = type;
+            key = vars[i];
+            varContents[0] = type;
+            varContents[1] = "no-table-"+count;
 
             //System.out.println(Arrays.toString(varContents)); //checks contents of varContents array
 
             //System.out.println("no_table-"+count + Arrays.toString(varContents));     //checks the tuple being input to map
 
-            curr.insert("no_table-"+count, varContents);
+            curr.insert(key, varContents);
             count++;
         }
 
@@ -67,11 +83,21 @@ public class SimpleTableBuilder extends LittleBaseListener {
         //gets the name of the function
         String name = ctx.id().getText();
         //gets the parameters of the function
-        String parameters = ctx.param_decl_list().getText();
-        //gets the internal content of the function
-        String content = ctx.func_body().getText();
+        String parameters =  ctx.param_decl_list().getText();
+        String[] splits = parameters.split(",");
 
-        //System.out.println("parameters: " + parameters);
+        String[] varDecl = new String[2];
+        String[] varInfo = new String[2];
+
+        for (int i = 0; i < splits.length; i++) {
+            varDecl = splitFunc(splits[i]);
+            varInfo[0] = varDecl[1];
+            varInfo[1] = "no-table";
+            curr.insert(varDecl[0], varInfo);
+            count++;
+        }
+
+        System.out.println("parameters: " + parameters);
         functions.add(name);
 
     }
