@@ -2,7 +2,7 @@ import java.util.*;
 
 public class SymbolTable {
     String name;
-    private LinkedHashMap<String, String[]> local = new LinkedHashMap<>(100);
+    public LinkedHashMap<String, String[]> local = new LinkedHashMap<>(100);
 
     public SymbolTable(String tableName) {
         this.name = tableName;
@@ -12,6 +12,13 @@ public class SymbolTable {
     public void insert(String varName, String[] contents) {
         local.put(varName, contents);
 
+    }
+
+    
+
+    @Override
+    public String toString() {
+        return "SymbolTable [name=" + name + "]";
     }
 
     //Print the Symbol Table

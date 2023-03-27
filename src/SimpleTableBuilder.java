@@ -31,8 +31,16 @@ public class SimpleTableBuilder extends LittleBaseListener {
         //3. Push it to the scope stack
         SymbolTable curr = new SymbolTable("GLOBAL");
         tableStack.push(curr);
+        tables.add(tableStack.peek());
+        //System.out.println(tables.toString());
+
 
     }
+
+    @Override public void exitProgram(LittleParser.ProgramContext ctx) { 
+        //System.out.println(tables.toString());
+    }
+
 
     @Override public void enterString_decl(LittleParser.String_declContext ctx) {
         //1. extract the name, type, and value
@@ -43,7 +51,7 @@ public class SimpleTableBuilder extends LittleBaseListener {
 
         tableStack.peek().insert(name, type_value);
 
-        tables.remove(tableStack.peek());
+        //tables.remove(tableStack.peek());
 
         //global.put(name,type_value);
     }
@@ -66,10 +74,14 @@ public class SimpleTableBuilder extends LittleBaseListener {
             //System.out.println(Arrays.toString(varContents)); //checks contents of varContents array
 
             //System.out.println("no_table-"+count + Arrays.toString(varContents));     //checks the tuple being input to map
-
+            if(tableStack.peek().local.containsKey(key))
+            {
+                System.out.println("DECLARATION ERROR " + key);
+                System.exit(0);
+            }
             tableStack.peek().insert(key, varContents);
         }
-            tables.add(tableStack.peek());
+            //tables.add(tableStack.peek());
     }
 
     //get the information about the function
@@ -93,6 +105,8 @@ public class SimpleTableBuilder extends LittleBaseListener {
         tableStack.push(curr);
 
         tables.add(curr);
+
+        //System.out.println(tables.toString());
 
         // System.out.println("from enterFuncDecl:");
         // prettyPrint();
@@ -124,18 +138,40 @@ public class SimpleTableBuilder extends LittleBaseListener {
 
     //check the contents of the else parts of the contents
     @Override public void enterElse_part(LittleParser.Else_partContext ctx) {
-        SymbolTable curr = new SymbolTable("BLOCK " + count);
-        //gets the content of the else part of the if statements
+        if(ctx.children != null)
+        {
+            SymbolTable curr = new SymbolTable("BLOCK " + count);
+            //gets the content of the else part of the if statements
+            try {
+                count++;
+
+                tableStack.push(curr);
+
+                tables.add(curr);
+            } catch (Exception e) {
+                //do nothing
+            }
+        }
+        
+        //System.out.println("else part: " + content);
+    }
+
+    @Override public void enterWhile_stmt(LittleParser.While_stmtContext ctx) { 
         try {
+            SymbolTable curr = new SymbolTable("BLOCK " + count);
+
             count++;
 
             tableStack.push(curr);
 
             tables.add(curr);
         } catch (Exception e) {
-            //do nothing
+
         }
-        //System.out.println("else part: " + content);
+    }
+
+    @Override public void exitWhile_stmt(LittleParser.While_stmtContext ctx) { 
+        tableStack.pop();
     }
 
     public void prettyPrint() {

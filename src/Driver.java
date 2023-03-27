@@ -1,6 +1,8 @@
 // import ANTLR's runtime libraries
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
+import java.util.*;
+import org.antlr.v4.gui.TreeViewer;
 
 public class Driver {
     public static void main(String[] args) throws Exception {
@@ -20,6 +22,9 @@ public class Driver {
         
         parser.removeErrorListeners();
         ParseTree tree = parser.program();
+
+        //TreeViewer viewer = new TreeViewer(Arrays.asList(parser.getRuleNames()), tree);
+        //viewer.open();
 
         ParseTreeWalker walker = new ParseTreeWalker();
 
