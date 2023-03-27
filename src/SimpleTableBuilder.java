@@ -90,7 +90,7 @@ public class SimpleTableBuilder extends LittleBaseListener {
         String[] varInfo = new String[2];
 
         for (int i = 0; i < splits.length; i++) {
-            varDecl = splitFunc(splits[i]);
+            varDecl = splitFunc(splits[i]); //{name, type}
             varInfo[0] = varDecl[1];
             varInfo[1] = "no-table";
             curr.insert(varDecl[0], varInfo);
