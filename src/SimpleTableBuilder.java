@@ -10,7 +10,6 @@ public class SimpleTableBuilder extends LittleBaseListener {
     //JAVA STORES THE REFERENCE HENCE IT DOESNT WORK SO PLS ADD
 
     int register = 0; 
-
     ArrayList<Object> operations = new ArrayList<>(); 
 
     ArrayList<String> variableNames = new ArrayList<>();
