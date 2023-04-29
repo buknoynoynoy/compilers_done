@@ -174,6 +174,18 @@ public class SimpleTableBuilder extends LittleBaseListener {
         tableStack.pop();
     }
 
+    @Override public void enterAssign_stmt(LittleParser.Assign_stmtContext ctx) {
+        //prints out the assignment statements
+        String assign = ctx.getText();
+        System.out.println(assign);
+    }
+
+    @Override public void enterExpr(LittleParser.ExprContext ctx) {
+        //enterExpr gets the assignment after the expression, for example: a:=1, the assignment is 1, and enterExpr is assigned 1.
+        String enterExpr = ctx.getText();
+        System.out.println("IN ENTEREXPR (enterExpr String): " + enterExpr);
+    }
+
     public void prettyPrint() {
 
         // for (SymbolTable symtb : tables) {
