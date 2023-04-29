@@ -40,17 +40,17 @@ public class SymbolTable {
         } //end print
     }
 
-    public boolean isInTable(String variable) {
-        boolean exists = false;
-                //print all symbol tables in the order they were created
+    public String searchType(String variable) {
+        //print all symbol tables in the order they were created
         for (Map.Entry<String,String[]> mapElement : local.entrySet()) {
-            String[] value = mapElement.getValue();
+            String[] type = mapElement.getValue();
+            String name=  mapElement.getKey();
 
-            if (value[0].equals(variable)) {
-                exists = true;
+            if (name.equals(variable)) {
+                return type[0];
             }
         } //end print
 
-        return exists;
+        return null;
     }
 }

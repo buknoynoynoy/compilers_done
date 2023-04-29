@@ -10,7 +10,7 @@ public class SimpleTableBuilder extends LittleBaseListener {
     int count = 1;
 
     Stack<SymbolTable> tableStack = new Stack<SymbolTable>();
-    ArrayList<SymbolTable> tables = new ArrayList<>();
+    public static ArrayList<SymbolTable> tables = new ArrayList<>();
 
     public static String[] splitFunc(String input) {
         // {varName, type}
@@ -198,5 +198,20 @@ public class SimpleTableBuilder extends LittleBaseListener {
             System.out.println();
         }
 
+        String type;
+        type = searchVarType("newline");
+        System.out.println("a " + type);
+
+    }
+
+    public String searchVarType(String variable) {
+        String type = null;
+        for (SymbolTable symtb2 : tables) {
+            type = symtb2.searchType(variable);
+            if (type != null) {
+                return type;
+            }
+        }
+        return null;
     }
 }
