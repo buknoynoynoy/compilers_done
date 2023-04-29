@@ -1,7 +1,0 @@
-In src:
-
-if permission is denied, ru  chmod +x Micro.sh
-
-./Micro.sh inputs2/*name of file you want to test with*
-
-**Micro will compile and run your files for you for every run.
