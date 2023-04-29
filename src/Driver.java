@@ -63,5 +63,34 @@ public class Driver {
         } //end while
 */
 
-    } //end main
+    } 
+    
+    class AST 
+    {
+        String definition;
+        String variable;
+        ArrayList<AST> children = new ArrayList<>();
+
+        public AST(String definition, String rightChild, String variable){
+            this.definition = definition;
+            this.variable = variable;
+        }
+
+        public void addChild(AST child){
+            this.children.add(child);
+        }
+
+        public static void displayTree(AST root) {
+            AST current = root;
+            System.out.println("Use: " + current.definition + "|Element: " + current.variable);
+            for (int i = 0; i < current.children.size(); i++) {
+                //this.print();
+                current = current.children.get(i);
+                displayTree(current);
+            }
+        }
+
+    }
+
+    //end main
 } //end class
