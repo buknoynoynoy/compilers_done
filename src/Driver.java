@@ -34,11 +34,11 @@ public class Driver {
         //stb.prettyPrint();
 
         //print Tiny Code
-        stb.printTinyCode();
+        //stb.printTinyCode();
 
         //print Optimzed Tiny Code
         stb.optimizeTinyCode();
-        //stb.printOptimized();
+        stb.printOptimized();
 
 /**
         while (!lexer._hitEOF) {
