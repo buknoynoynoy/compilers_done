@@ -1,0 +1,20 @@
+PROGRAM HorsePowerToHorseConversion
+BEGIN
+    STRING greeting := "Hello, welcome to horsepower to horse converter.";
+    STRING inputPrompt := "Please input horsepower:";
+    STRING nl := "\n";
+    INT horsePower;
+    FLOAT horses;
+    STRING withString := "With ";
+    STRING horsePowerString := " horsepower, you have ";
+    STRING horsesString := " horses";
+
+    FUNCTION VOID main()
+        BEGIN
+            WRITE(greeting, nl);
+            WRITE(inputPrompt, nl);
+            READ(horsePower);
+            horses := horsePower / 14.9;
+            WRITE(withString, horsePower, horsePowerString, horses, horsesString);
+        END
+END

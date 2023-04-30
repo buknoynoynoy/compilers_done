@@ -13,7 +13,7 @@ BEGIN
 
           e := a * c;
           f := b * d;
-	  e := e + f;
+	      e := e + f;
 
           WRITE(c, newline, d, newline, e, newline);
 

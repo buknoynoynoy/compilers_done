@@ -336,23 +336,49 @@ public class SimpleTableBuilder extends LittleBaseListener {
         if (result.endsWith(");")) {
             result = result.substring(0, result.length() - 2);
         }
+ 
+        String[] myArray;
 
-        String[] myArray = result.split(","); 
-        
-        for (int i = 0; i<myArray.length; i++)
+
+        if(result.contains(" "))
         {
-            if(variableNames.contains(myArray[i]) && types.get(i).equalsIgnoreCase("INT"))
+             myArray = result.split(", "); 
+        
+            for (int i = 0; i<myArray.length; i++)
             {
-                System.out.println("sys writei " + myArray[i]);
+                if(variableNames.contains(myArray[i]) && types.get(i).equalsIgnoreCase("INT"))
+                {
+                    System.out.println("sys writei " + myArray[i]);
+                }
+    
+                else if(variableNames.contains(myArray[i]) && types.get(i).equalsIgnoreCase("FLOAT"))
+                {
+                    System.out.println("sys writer " + myArray[i]);
+                }
+    
+                else {
+                    System.out.println("sys writes " + myArray[i]); 
+                }
             }
-
-            else if(variableNames.contains(myArray[i]) && types.get(i).equalsIgnoreCase("FLOAT"))
+        }
+        else {
+            myArray = result.split(","); 
+        
+            for (int i = 0; i<myArray.length; i++)
             {
-                System.out.println("sys writer " + myArray[i]);
-            }
-
-            else {
-                System.out.println("sys writes " + myArray[i]); 
+                if(variableNames.contains(myArray[i]) && types.get(i).equalsIgnoreCase("INT"))
+                {
+                    System.out.println("sys writei " + myArray[i]);
+                }
+    
+                else if(variableNames.contains(myArray[i]) && types.get(i).equalsIgnoreCase("FLOAT"))
+                {
+                    System.out.println("sys writer " + myArray[i]);
+                }
+    
+                else {
+                    System.out.println("sys writes " + myArray[i]); 
+                }
             }
         }
     }
