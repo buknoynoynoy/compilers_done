@@ -31,7 +31,14 @@ public class Driver {
 
         walker.walk(stb, tree);
 
-        stb.prettyPrint();
+        //stb.prettyPrint();
+
+        //print Tiny Code
+        stb.printTinyCode();
+
+        //print Optimzed Tiny Code
+        stb.optimizeTinyCode();
+        //stb.printOptimized();
 
 /**
         while (!lexer._hitEOF) {

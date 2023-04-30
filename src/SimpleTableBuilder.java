@@ -2,15 +2,25 @@ import java.lang.reflect.Array;
 import java.util.*;
 import java.util.ArrayList;
 
+import javax.sound.midi.Soundbank;
+
 public class SimpleTableBuilder extends LittleBaseListener {
 
     //MAKE CONTENTS ARRAY WITH NAME TYPE AND VALUE AN ARRAYLIST HOLDING EACH THING
     //JAVA STORES THE REFERENCE HENCE IT DOESNT WORK SO PLS ADD
 
+    int register = 0; 
+    ArrayList<String> tinyCode = new ArrayList<>(); 
+    ArrayList<String> optimized = new ArrayList<>(); 
+
+
+    ArrayList<String> variableNames = new ArrayList<>();
+    ArrayList<String> types = new ArrayList<>();
+
     int count = 1;
 
     Stack<SymbolTable> tableStack = new Stack<SymbolTable>();
-    public static ArrayList<SymbolTable> tables = new ArrayList<>();
+    ArrayList<SymbolTable> tables = new ArrayList<>();
 
     public static String[] splitFunc(String input) {
         // {varName, type}
@@ -37,10 +47,10 @@ public class SimpleTableBuilder extends LittleBaseListener {
 
     }
 
-    @Override public void exitProgram(LittleParser.ProgramContext ctx) { 
-        //System.out.println(tables.toString());
+    @Override public void exitProgram(LittleParser.ProgramContext ctx) {
+        tinyCode.add("sys halt");
+        //System.out.println("sys halt");
     }
-
 
     @Override public void enterString_decl(LittleParser.String_declContext ctx) {
         //1. extract the name, type, and value
@@ -50,6 +60,11 @@ public class SimpleTableBuilder extends LittleBaseListener {
         String[] type_value = new String[] {type, value};
 
         tableStack.peek().insert(name, type_value);
+
+        String command = "str " + name + " " + value;
+        //adds string decl to tinycode list
+        tinyCode.add(command);
+        //System.out.println(command);
 
         //tables.remove(tableStack.peek());
 
@@ -71,6 +86,15 @@ public class SimpleTableBuilder extends LittleBaseListener {
             key = vars[i];
             varContents[0] = type;
 
+            String command = "var " + key;
+
+            //adds var decl to tinyCode list
+            tinyCode.add(command);
+
+            //System.out.println(command);
+            variableNames.add(key);
+            types.add(type);
+
             //System.out.println(Arrays.toString(varContents)); //checks contents of varContents array
 
             //System.out.println("no_table-"+count + Arrays.toString(varContents));     //checks the tuple being input to map
@@ -80,6 +104,7 @@ public class SimpleTableBuilder extends LittleBaseListener {
                 System.exit(0);
             }
             tableStack.peek().insert(key, varContents);
+            //System.out.println(tableStack.peek());
         }
             //tables.add(tableStack.peek());
     }
@@ -174,18 +199,271 @@ public class SimpleTableBuilder extends LittleBaseListener {
         tableStack.pop();
     }
 
-    @Override public void enterAssign_stmt(LittleParser.Assign_stmtContext ctx) {
-        //prints out the assignment statements
-        String assign = ctx.getText();
-        System.out.println(assign);
+    // @Override public void enterExpr(LittleParser.ExprContext ctx) {
+    //     String expr = ctx.getText();
+    //     System.out.println("expr: " + expr);
+    //  }
+    //  @Override public void enterAssign_stmt(LittleParser.Assign_stmtContext ctx) {
+    //     String stmt = ctx.getText();
+    //     System.out.println("assign stmt: " + stmt);
+    //  }
+
+
+    @Override public void enterAssign_expr(LittleParser.Assign_exprContext ctx) {
+
+        String name = ctx.getText();
+        int index = name.indexOf(":=");
+        String before = name.substring(0, index);
+
+        String delimiter = ":="; // character after which to extract text
+        int second = name.indexOf(delimiter); // find index of delimiter
+        String after = name.substring(second + 2);
+
+        String type = ""; 
+
+            if (variableNames.contains(before))
+            {
+                int j = variableNames.indexOf(before);
+                types.get(j);
+                if (types.get(j).equalsIgnoreCase("INT"))
+                {
+                    type = "INT";
+                }
+                else if (types.get(j).equalsIgnoreCase("FLOAT")) {
+                    type = "FLOAT"; 
+                }
+            }
+
+
+        if(after.contains("*"))
+        {
+            String after1 = after.replace("(", "").replace(")", "");
+            String myString = after1;
+            String[] substrings = myString.split("\\s*\\*\\s*"); // split the string at "*"
+            String a = substrings[0]; // first substring is "a"
+            String c = substrings[1]; // second substring is "c"
+            
+            if(type.equalsIgnoreCase("INT"))
+            {
+                //System.out.println("move " + a + " r" + register);
+                tinyCode.add("move " + a + " r" + register);
+
+                //System.out.println("muli " + c + " r" + register);
+                tinyCode.add("muli " + c + " r" + register);
+
+                //System.out.println("move r" + register + " " + before);
+                tinyCode.add("move r" + register + " " + before);
+            }
+            if(type.equalsIgnoreCase("FLOAT")) {
+                    //System.out.println("move " + a + " r" + register);
+                    tinyCode.add("move " + a + " r" + register);
+
+                    //System.out.println("mulr " + c + " r" + register);
+                    tinyCode.add("mulr " + c + " r" + register);
+
+                    //System.out.println("move r" + register + " " + before);
+                    tinyCode.add("move r" + register + " " + before);
+            }
+
+        }
+        else if (after.contains("+"))
+        {
+            String after1 = after.replace("(", "").replace(")", "");
+            String myString = after1;
+            String[] substrings = myString.split("\\s*\\+\\s*"); // split the string at "*"
+            String a = substrings[0]; // first substring is "a"
+            String c = substrings[1]; // second substring is "c"
+            
+            if(type.equalsIgnoreCase("INT"))
+            {
+                //System.out.println("move " + a + " r" + register);
+                tinyCode.add("move " + a + " r" + register);
+
+                //System.out.println("addi " + c + " r" + register);
+                tinyCode.add("addi " + c + " r" + register);
+
+                //System.out.println("move r" + register + " " + before);
+                tinyCode.add("move r" + register + " " + before);
+            }
+            if(type.equalsIgnoreCase("FLOAT")) {
+                    //System.out.println("move " + a + " r" + register);
+                    tinyCode.add("move " + a + " r" + register);
+
+                    //System.out.println("addr " + c + " r" + register);
+                    tinyCode.add("addr " + c + " r" + register);
+
+                    //System.out.println("move r" + register + " " + before);
+                    tinyCode.add("move r" + register + " " + before);
+            }
+        }
+        else if (after.contains("/"))
+        {
+            String after1 = after.replace("(", "").replace(")", "");
+            String myString = after1;
+            String[] substrings = myString.split("\\s*\\/\\s*"); // split the string at "*"
+            String a = substrings[0]; // first substring is "a"
+            String c = substrings[1]; // second substring is "c"
+            
+            if(type.equalsIgnoreCase("INT"))
+            {
+                //System.out.println("move " + c + " r" + register);
+                tinyCode.add("move " + c + " r" + register);
+
+                //System.out.println("move " + a + " r" + (register + 1));
+                tinyCode.add("move " + a + " r" + (register + 1));
+
+                //System.out.println("divi r" + register + " r" + (register + 1));
+                tinyCode.add("divi r" + register + " r" + (register + 1));
+
+                //System.out.println("move r" + (register + 1) + " " + before);
+                tinyCode.add("move r" + (register + 1) + " " + before);
+
+                register++;
+            }
+            if(type.equalsIgnoreCase("FLOAT")) {
+                //System.out.println("move " + c + " r" + register);
+                tinyCode.add("move " + c + " r" + register);
+
+                //System.out.println("move " + a + " r" + (register + 1));
+                tinyCode.add("move " + a + " r" + (register + 1));
+
+                //System.out.println("divr r" + register + " r" + (register + 1));
+                tinyCode.add("divr r" + register + " r" + (register + 1));
+
+                //System.out.println("move r" + (register + 1) + " " + before);
+                tinyCode.add("move r" + (register + 1) + " " + before);
+
+                register++;
+            }
+        }
+
+        else if (after.contains("-"))
+        {
+            String after1 = after.replace("(", "").replace(")", "");
+            String myString = after1;
+            String[] substrings = myString.split("\\s*\\-\\s*"); // split the string at "*"
+            String a = substrings[0]; // first substring is "a"
+            String c = substrings[1]; // second substring is "c"
+            
+            if(type.equalsIgnoreCase("INT"))
+            {
+                //System.out.println("move " + a + " r" + register);
+                tinyCode.add("move " + a + " r" + register);
+
+                //System.out.println("subi " + c + " r" + register);
+                tinyCode.add("subi " + c + " r" + register);
+
+                //System.out.println("move r" + register + " " + before);
+                tinyCode.add("move r" + register + " " + before);
+            }
+            if(type.equalsIgnoreCase("FLOAT")) {
+                    //System.out.println("move " + a + " r" + register);
+                    tinyCode.add("move " + a + " r" + register);
+
+                    //System.out.println("subr " + c + " r" + register);
+                    tinyCode.add("subr " + c + " r" + register);
+
+                    //System.out.println("move r" + register + " " + before);
+                    tinyCode.add("move r" + register + " " + before);
+            }
+        }
+        else {
+            //System.out.println("move " + after + " r" + register);
+            tinyCode.add("move " + after + " r" + register); 
+
+            //System.out.println("move " + "r" + register + " " + before);
+            tinyCode.add("move " + "r" + register + " " + before);
+        }
+        
+        register++; 
     }
 
-    @Override public void enterExpr(LittleParser.ExprContext ctx) {
-        //enterExpr gets the assignment after the expression, for example: a:=1, the assignment is 1, and enterExpr is assigned 1.
-        String enterExpr = ctx.getText();
-        System.out.println("IN ENTEREXPR (enterExpr String): " + enterExpr);
+    @Override public void enterExpr(LittleParser.ExprContext ctx) { 
+
     }
 
+    @Override public void enterWrite_stmt(LittleParser.Write_stmtContext ctx) { 
+        String myString = ctx.getText();
+        String prefix = "WRITE(";
+        String result = ""; 
+        
+        if (myString.startsWith(prefix)) {
+            result = myString.substring(prefix.length());
+        } 
+
+        if (result.endsWith(");")) {
+            result = result.substring(0, result.length() - 2);
+        }
+
+        String[] myArray = result.split(","); 
+        
+        for (int i = 0; i<myArray.length; i++)
+        {
+            if(variableNames.contains(myArray[i]) && types.get(i).equalsIgnoreCase("INT"))
+            {
+                //System.out.println("sys writei " + myArray[i]);
+                tinyCode.add("sys writei " + myArray[i]);
+
+            }
+
+            else if(variableNames.contains(myArray[i]) && types.get(i).equalsIgnoreCase("FLOAT"))
+            {
+                //System.out.println("sys writer " + myArray[i]);
+                tinyCode.add("sys writer " + myArray[i]);
+            }
+
+            else {
+                //System.out.println("sys writes " + myArray[i]); 
+                tinyCode.add("sys writes " + myArray[i]); 
+            }
+        }
+    }
+
+    @Override public void enterRead_stmt(LittleParser.Read_stmtContext ctx) {
+        String myString = ctx.getText();
+        String prefix = "READ(";
+        String result = ""; 
+        
+        if (myString.startsWith(prefix)) {
+            result = myString.substring(prefix.length());
+        } 
+
+        if (result.endsWith(");")) {
+            result = result.substring(0, result.length() - 2);
+        }
+
+        String[] myArray = result.split(","); 
+        
+        for (int i = 0; i<myArray.length; i++)
+        {
+            if(variableNames.contains(myArray[i]) && types.get(i).equalsIgnoreCase("INT"))
+            {
+                //System.out.println("sys readi " + myArray[i]);
+                tinyCode.add("sys readi " + myArray[i]);
+            }
+
+            else if(variableNames.contains(myArray[i]) && types.get(i).equalsIgnoreCase("FLOAT"))
+            {
+                //System.out.println("sys readr " + myArray[i]);
+                tinyCode.add("sys readr " + myArray[i]);
+            }
+
+            else {
+                //System.out.println("sys reads " + myArray[i]); 
+                tinyCode.add("sys reads " + myArray[i]); 
+            }
+        }
+     }
+
+    @Override public void enterMulop(LittleParser.MulopContext ctx) {
+        String name = ctx.getText();
+       // System.out.println("MULOP output " + name ); 
+     }
+
+     @Override public void enterAddop(LittleParser.AddopContext ctx) {
+        String name = ctx.getText();
+       // System.out.println("ADDOP output " + name ); 
+      }
     public void prettyPrint() {
 
         // for (SymbolTable symtb : tables) {
@@ -198,20 +476,47 @@ public class SimpleTableBuilder extends LittleBaseListener {
             System.out.println();
         }
 
-        String type;
-        type = searchVarType("newline");
-        System.out.println("a " + type);
-
     }
 
-    public String searchVarType(String variable) {
-        String type = null;
-        for (SymbolTable symtb2 : tables) {
-            type = symtb2.searchType(variable);
-            if (type != null) {
-                return type;
+    public ArrayList<String> returnTinyCode() {
+
+        return tinyCode;
+    }
+
+    public void optimizeTinyCode() {
+        ArrayList<String> toOptimize = tinyCode;
+
+        for (int i = 0; i < toOptimize.size(); i++) {
+            String line = toOptimize.get(i);
+            String[] lineSplit = line.split(" ");
+
+            if (lineSplit[0].equals("move")) {
+                String nextLine = toOptimize.get(i+1);
+                String[] nextReg = nextLine.split(" ");
+                if (!lineSplit[1].matches("r[0-9]+[0-9]*") && lineSplit[2].equals(nextReg[1])) {
+                    //if r- is equal to the next instructions r-
+                    optimized.add("move " + lineSplit[1] + " " + nextReg[2]);
+                    //move to the next instruction after the register split
+                    i += 1;
+                } else {
+                    optimized.add(line);
+                }
+            } else {
+                optimized.add(line);
             }
         }
-        return null;
+    }
+
+    public void printOptimized() {
+
+        for (int i = 0; i < optimized.size(); i++) {
+            System.out.println(optimized.get(i));
+        }
+    }
+
+    public void printTinyCode() {
+        for (int i = 0; i < tinyCode.size(); i++) {
+            System.out.println(tinyCode.get(i));
+        }
     }
 }
